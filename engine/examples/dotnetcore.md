@@ -27,7 +27,7 @@ constructing your solutions
 
 This example assumes you already have an ASP.NET Core app
 on your machine. If you are new to ASP.NET you can follow a [simple
-tutorial](https://www.asp.net/get-started) to initialize a project or clone our [ASP.NET Docker Sample](https://github.com/dotnet/dotnet-docker/tree/master/samples/aspnetapp).
+tutorial](https://www.asp.net/get-started) to initialize a project or clone an existing [ASP.NET Docker Sample](https://github.com/dotnet/dotnet-docker/tree/master/samples/aspnetapp).
 
 ## Create a Dockerfile for an ASP.NET Core application
 
@@ -37,11 +37,13 @@ tutorial](https://www.asp.net/get-started) to initialize a project or clone our 
     The tags below are multi-arch meaning they pull either Windows or
     Linux containers depending on what mode is set in [Docker Desktop for
 Windows](/docker-for-windows/). Read more on [switching containers](/docker-for-windows/#switch-between-windows-and-linux-containers).
-3.  The `Dockerfile` assumes that your application is called `aspnetapp`. Change
+3.  The `Dockerfile` assumes that your application targets .NET Core 3.1. Change
+   the `Dockerfile` to use the version tags that match your applications target framework.
+4.  The `Dockerfile` assumes that your application is called `aspnetapp`. Change
    the `Dockerfile` to use the DLL file of your project.
 
 ```dockerfile
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -53,7 +55,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "aspnetapp.dll"]
@@ -64,8 +66,8 @@ ENTRYPOINT ["dotnet", "aspnetapp.dll"]
    to your project folder and copy the following into it.
 
 ```dockerignore
-bin\
-obj\
+**/bin/
+**/obj/
 ```
 
 ## Build and run the Docker image
